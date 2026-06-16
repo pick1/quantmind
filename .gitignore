@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# Secrets
+.env
+
+# Data — includes credentials, tokens, DB, vector store
+data/
+
+# Logs
+*.log
+~/.quantmind/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Specs — internal planning docs not relevant to public repo
+spec/

@@ -1,0 +1,32 @@
+# QuantMind Local — requirements.txt
+
+# Core
+python-dotenv>=1.0.0
+
+# UI
+streamlit>=1.32.0
+
+# Vector store
+chromadb>=0.5.0
+
+# PDF extraction
+pdfplumber>=0.11.0
+
+# Cross-encoder reranking + CPU embedding fallback
+sentence-transformers>=3.0.0
+
+# Async HTTP (arXiv API)
+httpx>=0.27.0
+
+# Ollama Python SDK (primary inference + embeddings)
+ollama>=0.4.0
+
+# OpenAI-compatible SDK (for OpenRouter fallback)
+openai>=1.0.0
+
+# Test
+pytest>=8.0.0
+
+# Gmail / Google Scholar Alerts connector
+google-api-python-client>=2.0.0
+google-auth-oauthlib>=1.0.0

@@ -13,9 +13,12 @@ import logging
 import streamlit as st
 
 from quantmind.auth import check_auth
+from quantmind.nav import render_sidebar_nav
 
 if not check_auth():
     st.stop()
+
+render_sidebar_nav(current_app="Quanto")
 
 from quantmind.ingest.tagger import CONTROLLED_VOCABULARY
 from quantmind.llm_client import LLMClient, ProviderUnavailableError
@@ -200,6 +203,19 @@ def _render_card(doc: dict, llm, _key_suffix: str = "") -> None:
     uid = f"{doc_id}_{source_id[:12]}" if doc_id else f"doc_{hash(source_id) % 10**6}"
     unique_key = f"explain_{uid}{_key_suffix}"
 
+    # Context-aware cross-site links
+    if source_type == "arxiv" and source_id:
+        arxiv_id = source_id.split("v")[0]  # strip version
+        st.markdown(
+            f"[📚 Look up in Librarian](https://librarian.sequoiaanalytics.com/"
+            f"?arxiv={arxiv_id}) · "
+            f"[🔍 View in Distillate](https://distillate.sequoiaanalytics.com/)"
+        )
+    elif source_type in ("pdf", "web"):
+        st.markdown(
+            f"[🔍 View related in Distillate](https://distillate.sequoiaanalytics.com/)"
+        )
+
     # Check for an existing persisted summary
     persist_key = f"persist_{doc_id}" if doc_id else None
     existing_summary = (
@@ -267,16 +283,25 @@ with tabs[0]:
         f"### All Documents ({len(all_docs)})"
     )
 
-    # Show items grouped by category
+    # Show items grouped by category — dedupe by doc_id across categories
+    seen_in_all: set = set()
     for tag in category_order:
         articles = categorized[tag]
         with st.expander(f"**{tag}** ({len(articles)} articles)", expanded=True):
             for doc in articles:
-                _render_card(doc, llm, _key_suffix=f"_{tag}")
+                doc_id = doc.get("id") or doc.get("source_id") or "?"
+                if doc_id in seen_in_all:
+                    continue
+                seen_in_all.add(doc_id)
+                _render_card(doc, llm, _key_suffix=f"_all_{tag}")
 
     if uncategorized:
         with st.expander(f"**Uncategorized** ({len(uncategorized)} items)", expanded=False):
             for doc in uncategorized:
+                doc_id = doc.get("id") or doc.get("source_id") or "?"
+                if doc_id in seen_in_all:
+                    continue
+                seen_in_all.add(doc_id)
                 _render_card(doc, llm)
 
 

@@ -10,6 +10,7 @@ import logging
 import streamlit as st
 
 from quantmind.auth import check_auth, logout
+from quantmind.nav import render_sidebar_nav
 from quantmind.config import (
     CHROMA_PERSIST_DIR,
     LOG_LEVEL,
@@ -65,6 +66,9 @@ if "query_history" not in st.session_state:
     st.session_state.query_history = []
 
 # ── Sidebar ────────────────────────────────────────────────────────────────
+# Note: nav is rendered on the sub-pages (pages/*.py). The home page
+# only shows the standard app-specific sidebar below.
+
 with st.sidebar:
     st.title("🧠 QuantMind")
     st.caption("Financial Knowledge Extraction & Retrieval")
